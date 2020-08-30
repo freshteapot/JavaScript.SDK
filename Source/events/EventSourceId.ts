@@ -8,6 +8,15 @@ export class EventSourceId extends ConceptAs<Guid, '@dolittle/sdk.events.EventSo
     constructor(id: Guid) {
         super(id, '@dolittle/sdk.events.EventSourceId');
     }
+
+    /**
+     * Represents an EventSourceId that is not set.
+     *
+     * @static
+     * @type {EventSourceId}
+     */
+    static notSet: EventSourceId = EventSourceId.from(Guid.empty);
+
     /**
      * Creates an {EventSourceId} from a guid.
      *
