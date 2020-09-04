@@ -3,10 +3,10 @@
 import { Exception } from '@dolittle/rudiments';
 
 /**
- * Exception that gets thrown when {EventLogSequenceNumber} is not a natural number.
+ * Exception that gets thrown when {@link EventLogSequenceNumber} is not a natural number.
  *
  * @export
- * @class GenerationMustBeNaturalNumber
+ * @class EventLogSequenceNumberMustBeNaturalNumber
  * @extends {Exception}
  */
 export class EventLogSequenceNumberMustBeNaturalNumber extends Exception {

@@ -4,9 +4,13 @@
 export { eventType } from './eventType';
 export { MissingEventsFromRuntime } from './MissingEventsFromRuntime';
 export { MissingExecutionContext } from './MissingExecutionContext';
+export { AggregateRootVersionMustBeNaturalNumber } from './AggregateRootVersionMustBeNaturalNumber';
 export { EventLogSequenceNumberMustBeNaturalNumber } from './EventLogSequenceNumberMustBeNaturalNumber';
+export { AggregateRootVersion } from './AggregateRootVersion';
 export { EventLogSequenceNumber } from './EventLogSequenceNumber';
 export { EventSourceId } from './EventSourceId';
+export { UncommittedAggregateEvent } from './UncommittedAggregateEvent';
+export { UncommittedAggregateEvents } from './UncommittedAggregateEvents';
 export { PartitionId } from './PartitionId';
 export { ScopeId } from './ScopeId';
 export { StreamId } from './StreamId';
