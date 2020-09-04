@@ -4,7 +4,7 @@
 import { DateTime } from 'luxon';
 import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb';
 import { CommittedEvent as PbCommittedEvent } from '@dolittle/runtime.contracts/Runtime/Events/Committed_pb';
-import { UncommittedEvent as PbUncommittedEvent } from '@dolittle/runtime.contracts/Runtime/Events/Uncommitted_pb';
+import { UncommittedEvent as PbUncommittedEvent, UncommittedAggregateEvents as PbUncommittedAggregateEvents } from '@dolittle/runtime.contracts/Runtime/Events/Uncommitted_pb';
 
 import { Artifact } from '@dolittle/sdk.artifacts';
 import { artifacts, guids, executionContexts } from '@dolittle/sdk.protobuf';
@@ -22,7 +22,7 @@ export class EventConverters {
      * @param {EventSourceId} eventSourceId The unique identifier of the event source that the event is originating from.
      * @param {Artifact} artifact Artifact of the event type.
      * @param {boolean} isPublic Whether or not it is a public event
-     * @returns {UncommittedEvent} Constructed uncommitted event.
+     * @returns {PbUncommittedEvent} Constructed uncommitted event.
      */
     static getUncommittedEventFrom(event: any, eventSourceId: EventSourceId, artifact: Artifact, isPublic: boolean): PbUncommittedEvent {
         const uncommittedEvent = new PbUncommittedEvent();
@@ -31,6 +31,21 @@ export class EventConverters {
         uncommittedEvent.setPublic(isPublic);
         uncommittedEvent.setContent(JSON.stringify(event));
         return uncommittedEvent;
+    }
+    /**
+     * Creates an uncommitted aggregate event from given parameters.
+     * @param {*} event Event content to constructor with.
+     * @param {EventSourceId} eventSourceId The unique identifier of the event source that the event is originating from.
+     * @param {Artifact} artifact Artifact of the event type.
+     * @param {boolean} isPublic Whether or not it is a public event
+     * @returns {PbUncommittedAggregateEvents.UncommittedAggregateEvent} Constructed uncommitted event.
+     */
+    static getUncommittedAggregateEventFrom(event: any, artifact: Artifact, isPublic: boolean): PbUncommittedAggregateEvents.UncommittedAggregateEvent {
+        const uncommittedAggregateEvent = new PbUncommittedAggregateEvents.UncommittedAggregateEvent();
+        uncommittedAggregateEvent.setArtifact(artifacts.toProtobuf(artifact));
+        uncommittedAggregateEvent.setPublic(isPublic);
+        uncommittedAggregateEvent.setContent(JSON.stringify(event));
+        return uncommittedAggregateEvent;
     }
 
     /**
