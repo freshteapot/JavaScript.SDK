@@ -4,11 +4,11 @@
 import grpc from 'grpc';
 import { Logger} from 'winston';
 
-import { IArtifacts } from '@dolittle/sdk.artifacts';
+import { ArtifactsBuilder, IArtifacts } from '@dolittle/sdk.artifacts';
 import { IContainer, Container } from '@dolittle/sdk.common';
 import { IEventStore, EventStore, EventStoreBuilderCallback, EventStoreBuilder } from '@dolittle/sdk.events';
-import { IFilters } from '@dolittle/sdk.events.filtering';
-import { IEventHandlers } from '@dolittle/sdk.events.handling';
+import { EventFiltersBuilder, IFilters } from '@dolittle/sdk.events.filtering';
+import { EventHandlersBuilder, IEventHandlers } from '@dolittle/sdk.events.handling';
 import { IExecutionContextManager, MicroserviceId, ExecutionContextManager, Environment, MicroserviceBuilder, MicroserviceBuilderCallback } from '@dolittle/sdk.execution';
 import { EventHorizonsBuilder, EventHorizonsBuilderCallback, IEventHorizons } from '@dolittle/sdk.eventhorizon';
 import { Cancellation } from '@dolittle/sdk.resilience';
@@ -16,6 +16,7 @@ import { Cancellation } from '@dolittle/sdk.resilience';
 import { EventStoreClient } from '@dolittle/runtime.contracts/Runtime/Events/EventStore_grpc_pb';
 import { SubscriptionsClient } from '@dolittle/runtime.contracts/Runtime/EventHorizon/Subscriptions_grpc_pb';
 import { LoggingBuilder, LoggingBuilderCallback } from './LoggingBuilder';
+import { FiltersClient } from '@dolittle/runtime.contracts/Runtime/Events.Processing/Filters_grpc_pb';
 
 
 /**
@@ -68,6 +69,9 @@ export class ClientBuilder {
     private _loggingBuilder: LoggingBuilder;
     private _container: IContainer = new Container();
     private _eventStoreBuilder: EventStoreBuilder;
+    private _eventHandlersBuilder: EventHandlersBuilder;
+    private _eventTypesBuilder: ArtifactsBuilder;
+    private _filtersBuilder: EventFiltersBuilder;
 
     /**
      * Creates an instance of client builder.
@@ -78,6 +82,9 @@ export class ClientBuilder {
         this._cancellation = Cancellation.default;
         this._loggingBuilder = new LoggingBuilder();
         this._eventStoreBuilder = new EventStoreBuilder();
+        this._eventHandlersBuilder = new EventHandlersBuilder();
+        this._eventTypesBuilder = new ArtifactsBuilder();
+        this._filtersBuilder = new EventFiltersBuilder();
     }
 
     /**
@@ -178,15 +185,10 @@ export class ClientBuilder {
         const credentials = grpc.credentials.createInsecure();
         const executionContextManager = new ExecutionContextManager(microserviceId, version, this._environment);
 
-        const [artifacts, eventHandlers, filters] = this._eventStoreBuilder.build(
-            connectionString,
-            credentials,
-            this._container,
-            executionContextManager,
-            logger,
-            this._cancellation
-        );
+        const filters = this._filtersBuilder.build(
+            new FiltersClient(connectionString, credentials),
 
+        );
         const subscriptionsClient = new SubscriptionsClient(connectionString, credentials);
         const eventHorizons = this._eventHorizonsBuilder.build(subscriptionsClient, executionContextManager, logger);
 
